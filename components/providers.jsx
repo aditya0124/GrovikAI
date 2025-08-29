@@ -1,17 +1,15 @@
-// // app/providers.jsx
 // "use client";
 
 // import { SessionProvider } from "next-auth/react";
 
-// export function Provider({ children }) {
+// export default function Providers({ children }) {
 //   return <SessionProvider>{children}</SessionProvider>;
 // }
 
-// app/providers.jsx
 "use client";
 
 import { SessionProvider } from "next-auth/react";
 
-export function Providers({ children, session }) {
+export default function Providers({ children, session }) {
   return <SessionProvider session={session}>{children}</SessionProvider>;
 }

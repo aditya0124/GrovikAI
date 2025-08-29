@@ -15,20 +15,36 @@ datasource db {
 }
 
 
+
 model User {
   id            String          @id @default(cuid())
   name          String?
   email         String?         @unique
+  image         String?
   password      String?
   emailVerified DateTime?
-  image         String?
+
+  // NextAuth Relations
   accounts      Account[]
   sessions      Session[]
-  // Optional for WebAuthn support
-  Authenticator Authenticator[]
+  Authenticator Authenticator[] // Optional (WebAuthn)
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  // Custom Fields
+  imageUrl      String?
+  industry      String?
+  industryInsight IndustryInsight? @relation(fields: [industry], references: [industry])
+
+  bio           String?
+  experience    Int?
+  skills        String[]        // Array of skills
+
+  assessments   Assessment[]
+  resume        Resume?
+  coverLetter   CoverLetter[]
+  roadmaps      CareerRoadmap[]
+
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
 }
 
 model Account {
@@ -72,7 +88,6 @@ model VerificationToken {
   @@unique([identifier, token])
 }
 
-// Optional for WebAuthn support
 model Authenticator {
   credentialID         String  @unique
   userId               String
@@ -88,3 +103,75 @@ model Authenticator {
   @@id([userId, credentialID])
 }
 
+// === App-Specific Models ===
+
+model Assessment {
+  id            String    @id @default(cuid())
+  userId        String
+  user          User      @relation(fields: [userId], references: [id])
+  quizScore     Float
+  questions     Json[]
+  category      String
+  improvementTip String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@index([userId])
+}
+
+model Resume {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [id])
+  content   String   @db.Text
+  atsScore  Float?
+  feedback  String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model CoverLetter {
+  id             String   @id @default(cuid())
+  userId         String
+  user           User     @relation(fields: [userId], references: [id])
+  content        String
+  jobDescription String?
+  companyName    String
+  jobTitle       String
+  status         String   @default("draft")
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([userId])
+}
+
+model CareerRoadmap {
+  id             String   @id @default(uuid())
+  userId         String
+  field          String
+  timeCommitment String
+  roadmapTitle   String
+  description    String
+  duration       String
+  initialNodes   Json
+  initialEdges   Json
+  createdAt      DateTime @default(now())
+  user           User     @relation(fields: [userId], references: [id])
+}
+
+model IndustryInsight {
+  id                String    @id @default(cuid())
+  industry          String    @unique
+  users             User[]
+  salaryRanges      Json[]
+  growthRate        Float
+  demandLevel       String
+  topSkills         String[]
+  marketOutlook     String
+  keyTrends         String[]
+  recommendedSkills String[]
+  lastUpdated       DateTime  @default(now())
+  nextUpdate        DateTime
+
+  @@index([industry])
+}

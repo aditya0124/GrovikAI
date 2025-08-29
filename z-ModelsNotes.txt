@@ -1,5 +1,5 @@
 You're working with the **default Prisma schema for NextAuth.js**, which defines all the database tables NextAuth needs to manage users, sessions, accounts (for OAuth), and more. Below, I’ll **explain each model**, **what each field does**, and **which are required vs optional** for basic auth (email/password and GitHub login).
-
+CODE GENIX AUthor NAME
 ---
 
 ## 🔷 `User` Model
